@@ -1,6 +1,5 @@
 // File upload handling
 document.addEventListener('DOMContentLoaded', function() {
-    
     // File input change handler
     const fileInput = document.getElementById('file-input');
     const fileNameDisplay = document.getElementById('file-name');
@@ -14,67 +13,46 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     }
-    
-    // Upload form handler
+    // Upload form handler with fetch (modern async)
     const uploadForm = document.getElementById('upload-form');
     if (uploadForm) {
         uploadForm.addEventListener('submit', async function(e) {
             e.preventDefault();
-            
             const formData = new FormData(this);
             const uploadBtn = document.getElementById('upload-btn');
             const progressContainer = document.getElementById('progress-container');
             const progressFill = document.getElementById('progress-fill');
             const progressText = document.getElementById('progress-text');
-            
-            // Show progress
+            // Show progress UI (no actual progress with fetch alone)
             uploadBtn.disabled = true;
             uploadBtn.textContent = 'Uploading...';
             progressContainer.classList.remove('hidden');
-            
+            progressFill.style.width = '50%';
+            progressText.textContent = 'Uploading...';
             try {
-                const xhr = new XMLHttpRequest();
-                
-                // Progress handler
-                xhr.upload.addEventListener('progress', function(e) {
-                    if (e.lengthComputable) {
-                        const percentComplete = (e.loaded / e.total) * 100;
-                        progressFill.style.width = percentComplete + '%';
-                        progressText.textContent = `Uploading... ${Math.round(percentComplete)}%`;
-                    }
+                const response = await fetch('/upload', {
+                    method: 'POST',
+                    body: formData
                 });
-                
-                // Success handler
-                xhr.addEventListener('load', function() {
-                    if (xhr.status === 200) {
-                        const response = JSON.parse(xhr.responseText);
-                        if (response.success) {
-                            window.location.href = `/success/${response.fileId}`;
-                        } else {
-                            alert('Upload failed: ' + (response.message || 'Unknown error'));
-                            resetForm();
-                        }
-                    } else {
-                        alert('Upload failed. Please try again.');
-                        resetForm();
-                    }
-                });
-                
-                // Error handler
-                xhr.addEventListener('error', function() {
-                    alert('Upload failed. Please check your connection.');
+
+                // Try to interpret as JSON, but handle possible redirect!
+                if (response.redirected) {
+                    window.location.href = response.url;
+                    return;
+                }
+                const data = await response.json();
+                if (data.success && data.fileId) {
+                    window.location.href = `/success/${data.fileId}`;
+                } else {
+                    alert('Upload failed: ' + (data.message || 'Unknown error'));
                     resetForm();
-                });
-                
-                xhr.open('POST', '/upload');
-                xhr.send(formData);
-                
+                }
             } catch (error) {
                 console.error('Upload error:', error);
                 alert('Upload failed. Please try again.');
                 resetForm();
             }
-            
+
             function resetForm() {
                 uploadBtn.disabled = false;
                 uploadBtn.textContent = 'Upload File';
@@ -83,27 +61,22 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     }
-    
     // Copy to clipboard
     const copyBtn = document.getElementById('copy-btn');
     const shareLink = document.getElementById('share-link');
-    
     if (copyBtn && shareLink) {
         copyBtn.addEventListener('click', function() {
             shareLink.select();
             document.execCommand('copy');
-            
             const originalText = copyBtn.textContent;
             copyBtn.textContent = 'Copied!';
             copyBtn.style.background = '#27ae60';
-            
             setTimeout(() => {
                 copyBtn.textContent = originalText;
                 copyBtn.style.background = '';
             }, 2000);
         });
     }
-    
     // Dashboard copy links
     const dashboardCopyBtns = document.querySelectorAll('.btn-copy');
     dashboardCopyBtns.forEach(btn => {
@@ -118,14 +91,12 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         });
     });
-    
     // Dashboard delete files
     const deleteBtns = document.querySelectorAll('.btn-delete');
     deleteBtns.forEach(btn => {
         btn.addEventListener('click', function() {
             if (confirm('Are you sure you want to delete this file?')) {
                 const fileId = this.getAttribute('data-id');
-                
                 fetch(`/delete/${fileId}`, {
                     method: 'DELETE'
                 })
