@@ -4,6 +4,7 @@ const path = require('path');
 require('dotenv').config();
 
 const connectDB = require('./config/database');
+const { startCleanupJob } = require('./utils/cronJobs');
 const errorHandler = require('./middleware/errorHandler');
 
 const uploadRoutes = require('./routes/upload');
@@ -16,6 +17,8 @@ const PORT = process.env.PORT || 4000;
 
 // Connect to database
 connectDB();
+// Start cleanup cron job
+startCleanupJob();
 
 // View engine setup
 app.set('view engine', 'ejs');
