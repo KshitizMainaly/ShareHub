@@ -1,6 +1,7 @@
 const File = require('../models/File');
 const { customAlphabet } = require('nanoid');
 const bcrypt = require('bcrypt');
+const QRCode = require('qrcode');
 
 const nanoid = customAlphabet('0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz', 10);
 
@@ -66,4 +67,30 @@ exports.uploadFile = async (req, res) => {
   }
 };
 
-exports.showSuccess = async (req, res) => {};
+exports.showSuccess = async (req, res) => {
+  try {
+    const file = await File.findOne({ fileId: req.params.fileId });
+    if (!file) {
+      return res.status(404).render('error', {
+        title: 'File Not Found',
+        message: 'The file you are looking for does not exist.',
+        statusCode: 404
+      });
+    }
+    const shareUrl = `${process.env.BASE_URL || (req.protocol + '://' + req.get('host'))}/download/${file.fileId}`;
+    let qrCode = null;
+    try {
+      qrCode = await QRCode.toDataURL(shareUrl);
+    } catch {
+      qrCode = null;
+    }
+    res.render('success', { file, shareUrl, qrCode });
+  } catch (error) {
+    console.error('Success page error:', error);
+    res.status(500).render('error', {
+      title: 'Error',
+      message: 'Unable to display success page',
+      statusCode: 500
+    });
+  }
+};
