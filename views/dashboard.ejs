@@ -1,0 +1,48 @@
+<%- include('partials/header', { title: 'My Files' }) %>
+
+<div class="dashboard-container">
+    <h1>My Files</h1>
+    
+    <% if (files && files.length > 0) { %>
+        <table class="files-table">
+            <thead>
+                <tr>
+                    <th>File Name</th>
+                    <th>Size</th>
+                    <th>Downloads</th>
+                    <th>Expires</th>
+                    <th>Link</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% files.forEach(file => { %>
+                    <tr>
+                        <td><%= file.originalName %></td>
+                        <td><%= (file.size / 1024 / 1024).toFixed(2) %> MB</td>
+                        <td><%= file.downloadCount %></td>
+                        <td><%= new Date(file.expiresAt).toLocaleDateString() %></td>
+                        <td>
+                            <button class="btn-small btn-copy" data-link="<%= process.env.BASE_URL || 'http://localhost:4000' %>/download/<%= file.fileId %>">
+                                Copy Link
+                            </button>
+                        </td>
+                        <td>
+                            <button class="btn-small btn-delete" data-id="<%= file.fileId %>">
+                                Delete
+                            </button>
+                        </td>
+                    </tr>
+                <% }) %>
+            </tbody>
+        </table>
+    <% } else { %>
+        <div class="empty-state">
+            <p>You haven't uploaded any files yet.</p>
+            <a href="/" class="btn-primary">Upload Your First File</a>
+        </div>
+    <% } %>
+</div>
+
+<%- include('partials/footer') %>
+
