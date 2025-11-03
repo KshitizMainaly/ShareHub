@@ -1,0 +1,55 @@
+<%- include('partials/header', { title: 'ShareHub - Upload Files' }) %>
+
+<div class="upload-container">
+    <h1>Share Files Instantly</h1>
+    <p class="subtitle">Upload your file and get a shareable link</p>
+
+    <form id="upload-form" enctype="multipart/form-data">
+        <div class="form-group">
+            <label for="file-input" class="file-label">Choose File</label>
+            <input type="file" id="file-input" name="file" required>
+            <span id="file-name" class="file-name"></span>
+        </div>
+
+        <div class="form-group">
+            <label for="expiration">Link expires after:</label>
+            <select id="expiration" name="expiration">
+                <option value="24">24 hours</option>
+                <option value="48">48 hours</option>
+                <option value="72">3 days</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="password">Password (optional):</label>
+            <input type="password" id="password" name="password" placeholder="Leave empty for no password">
+        </div>
+
+        <div id="progress-container" class="progress-container hidden">
+            <div class="progress-bar">
+                <div id="progress-fill" class="progress-fill"></div>
+            </div>
+            <p id="progress-text">Uploading...</p>
+        </div>
+
+        <button type="submit" class="btn-primary" id="upload-btn">Upload File</button>
+    </form>
+
+    <div class="features">
+        <div class="feature">
+            <span>🔒</span>
+            <p>Secure & Private</p>
+        </div>
+        <div class="feature">
+            <span>⚡</span>
+            <p>Fast Upload</p>
+        </div>
+        <div class="feature">
+            <span>⏱️</span>
+            <p>Auto Expire</p>
+        </div>
+    </div>
+</div>
+
+<%- include('partials/footer') %>
+
