@@ -1,0 +1,35 @@
+<%- include('partials/header', { title: 'Upload Successful' }) %>
+
+<div class="success-container">
+    <div class="success-icon">✅</div>
+    <h1>File Uploaded Successfully!</h1>
+    
+    <div class="file-info">
+        <p><strong>File:</strong> <%= file.originalName %></p>
+        <p><strong>Size:</strong> <%= (file.size / 1024 / 1024).toFixed(2) %> MB</p>
+        <p><strong>Expires:</strong> <%= new Date(file.expiresAt).toLocaleDateString() %></p>
+    </div>
+
+    <div class="share-box">
+        <label>Share this link:</label>
+        <div class="link-container">
+            <input type="text" id="share-link" value="<%= shareUrl %>" readonly>
+            <button class="btn-copy" id="copy-btn">Copy</button>
+        </div>
+    </div>
+
+    <% if (qrCode) { %>
+    <div class="qr-section">
+        <p>Scan QR Code:</p>
+        <img src="<%= qrCode %>" alt="QR Code" class="qr-code">
+    </div>
+    <% } %>
+
+    <div class="actions">
+        <a href="/" class="btn-primary">Upload Another File</a>
+        <a href="/dashboard" class="btn-secondary">View My Files</a>
+    </div>
+</div>
+
+<%- include('partials/footer') %>
+

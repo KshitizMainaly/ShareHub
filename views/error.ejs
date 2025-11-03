@@ -1,0 +1,16 @@
+<%- include('partials/header', { title: 'Error' }) %>
+
+<div class="error-container">
+    <div class="error-icon">⚠️</div>
+    <h1><%= title || 'Oops! Something went wrong' %></h1>
+    <p><%= message || 'The page you are looking for does not exist.' %></p>
+    
+    <% if (statusCode) { %>
+        <p class="error-code">Error Code: <%= statusCode %></p>
+    <% } %>
+    
+    <a href="/" class="btn-primary">Go Home</a>
+</div>
+
+<%- include('partials/footer') %>
+
