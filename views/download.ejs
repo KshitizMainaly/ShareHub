@@ -1,31 +1,41 @@
 <%- include('partials/header', { title: 'Download File' }) %>
 
 <div class="download-container">
-    <div class="file-icon">📄</div>
-    
-    <h1><%= file.originalName %></h1>
-    
-    <div class="file-details">
-        <p><strong>Size:</strong> <%= (file.size / 1024 / 1024).toFixed(2) %> MB</p>
-        <p><strong>Type:</strong> <%= file.mimetype %></p>
-        <p><strong>Uploaded:</strong> <%= new Date(file.createdAt).toLocaleDateString() %></p>
-        <p><strong>Downloads:</strong> <%= file.downloadCount %></p>
-        
-        <% if (file.maxDownloads) { %>
-            <p><strong>Remaining:</strong> <%= file.maxDownloads - file.downloadCount %> downloads</p>
-        <% } %>
-    </div>
+  <div class="file-icon">📄</div>
 
-    <% if (file.mimetype.startsWith('image/')) { %>
-        <div class="preview">
-            <img src="<%= file.fileUrl %>" alt="<%= file.originalName %>">
-        </div>
+  <h1><%= file.originalName %></h1>
+
+  <div class="file-details">
+    <p><strong>Size:</strong> <%= (file.size / 1024 / 1024).toFixed(2) %> MB</p>
+    <p><strong>Type:</strong> <%= file.mimetype %></p>
+    <p>
+      <strong>Uploaded:</strong> <%= new
+      Date(file.createdAt).toLocaleDateString() %>
+    </p>
+    <p><strong>Downloads:</strong> <%= file.downloadCount %></p>
+
+    <% if (file.maxDownloads) { %>
+    <p>
+      <strong>Remaining:</strong> <%= file.maxDownloads - file.downloadCount %>
+      downloads
+    </p>
     <% } %>
+  </div>
 
-    <a href="<%= file.fileUrl %>" class="btn-primary" download="<%= file.originalName %>">
-        Download File
-    </a>
+  <% if (file.mimetype.startsWith('image/')) { %>
+  <div class="preview">
+    <img src="<%= file.fileUrl %>" alt="<%= file.originalName %>" />
+  </div>
+  <% } %>
+
+  <a
+    href="<%= file.fileUrl %>"
+    class="btn-primary"
+    download="<%= file.originalName %>"
+    onclick="handleDownload(event, '<%= file.fileUrl %>', '<%= file.originalName %>')"
+  >
+    Download File
+  </a>
 </div>
-
+<script src="/js/download.js"></script>
 <%- include('partials/footer') %>
-
